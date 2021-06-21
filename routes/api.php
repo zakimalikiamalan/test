@@ -13,11 +13,10 @@ use Illuminate\Support\Facades\Route;
 | is assigned the "api" middleware group. Enjoy building your API!
 |
 */
-Route::post('/employer', 'EmployerController@store');
-Route::middleware('auth:api')->get('/user', function (Request $request) {
-    return $request->user();
-});
 
-Route::resource('/employer', 'EmployerController')->except([
-    'create', 'edit'
-]);
+Route::get('/employer', 'EmployerController@index');
+Route::post('/employer', 'EmployerController@store');
+
+Route::get('/departement', 'DepartementController@index');
+Route::get('/office', 'OfficeController@index');
+Route::get('/position', 'PositionController@index');

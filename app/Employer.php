@@ -13,7 +13,7 @@ class Employer extends Model
         'last_name',
         'email_address',
         'phone_number',
-        'postion_id',
+        'position_id',
         'departement_id',
         'office_id'
     ];
