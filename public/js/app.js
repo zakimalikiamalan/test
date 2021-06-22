@@ -1991,13 +1991,25 @@ __webpack_require__.r(__webpack_exports__);
 //
 //
 //
+//
+//
+//
+//
+//
+//
 /* harmony default export */ __webpack_exports__["default"] = ({
   mounted: function mounted() {
     this.load();
   },
   data: function data() {
     return {
-      tables: {},
+      selectedPosition: "",
+      selectedOffice: "",
+      selectedDepartement: "",
+      offices: {},
+      departements: {},
+      positions: {},
+      employer: {},
       form: {
         id: '',
         first_name: '',
@@ -2005,35 +2017,62 @@ __webpack_require__.r(__webpack_exports__);
         email_address: '',
         phone_number: '',
         position_id: '',
-        departement_name: '',
-        office_name: ''
+        departement_id: '',
+        office_id: ''
       }
     };
   },
   methods: {
+    chooseDepartement: function chooseDepartement(event) {
+      this.form.departement_id = event.target.value;
+      console.log(this.form.departement_id);
+    },
+    choosePosition: function choosePosition(event) {
+      this.form.position_id = event.target.value;
+      console.log(this.form.position_id);
+    },
+    chooseOffice: function chooseOffice(event) {
+      this.form.office_id = event.target.value;
+      console.log(this.form.office_id);
+    },
     load: function load() {
       var _this = this;
 
       axios.get('http://test.test/api/employer').then(function (response) {
-        _this.tables = response.data;
-        console.log(_this.tables);
+        _this.employer = response.data;
+        console.log(_this.employer);
+      });
+      axios.get('http://test.test/api/departement').then(function (response) {
+        _this.departements = response.data;
+        console.log(_this.departements);
+      });
+      axios.get('http://test.test/api/office').then(function (response) {
+        _this.offices = response.data;
+        console.log(_this.offices);
+      });
+      axios.get('http://test.test/api/position').then(function (response) {
+        _this.positions = response.data;
+        console.log(_this.positions);
       });
     },
     postData: function postData() {
+      var _this2 = this;
+
       axios.post('http://test.test/api/employer', this.form).then(function (response) {
-        // this.tables = response.data;
+        _this2.load();
+
         console.log(response);
       });
     },
     postDataDelete: function postDataDelete() {
+      var _this3 = this;
+
       axios.post('http://test.test/api/employer', this.form).then(function (response) {
-        // this.first_name =''
-        // this.last_name =''  
-        // this.email_address =''
-        // this.phone_number =''
-        // this.position_name =''
-        // this.departement_name  =''
-        // this.office_name =''
+        _this3.form.id = '';
+        _this3.form.first_name = '', _this3.form.last_name = '', _this3.form.email_address = '', _this3.form.phone_number = '', _this3.selectedPosition = '', _this3.selectedDepartement = '', _this3.selectedOffice = '';
+
+        _this3.load();
+
         console.log(response);
       });
     }
@@ -38485,32 +38524,49 @@ var render = function() {
             _c("div", { staticClass: "form-group" }, [
               _c("label", { attrs: { for: "position" } }, [_vm._v("Position")]),
               _vm._v(" "),
-              _c("input", {
-                directives: [
-                  {
-                    name: "model",
-                    rawName: "v-model",
-                    value: _vm.form.position_name,
-                    expression: "form.position_name"
-                  }
-                ],
-                staticClass: "form-control",
-                attrs: {
-                  type: "text",
-                  id: "position",
-                  "aria-describedby": "position",
-                  placeholder: "Position"
-                },
-                domProps: { value: _vm.form.position_name },
-                on: {
-                  input: function($event) {
-                    if ($event.target.composing) {
-                      return
+              _c(
+                "select",
+                {
+                  directives: [
+                    {
+                      name: "model",
+                      rawName: "v-model",
+                      value: _vm.selectedPosition,
+                      expression: "selectedPosition"
                     }
-                    _vm.$set(_vm.form, "position_name", $event.target.value)
+                  ],
+                  staticClass: "form-control",
+                  attrs: { name: "position", id: "position", tabindex: "12" },
+                  on: {
+                    change: [
+                      function($event) {
+                        var $$selectedVal = Array.prototype.filter
+                          .call($event.target.options, function(o) {
+                            return o.selected
+                          })
+                          .map(function(o) {
+                            var val = "_value" in o ? o._value : o.value
+                            return val
+                          })
+                        _vm.selectedPosition = $event.target.multiple
+                          ? $$selectedVal
+                          : $$selectedVal[0]
+                      },
+                      function($event) {
+                        return _vm.choosePosition($event)
+                      }
+                    ]
                   }
-                }
-              })
+                },
+                _vm._l(_vm.positions, function(position) {
+                  return _c(
+                    "option",
+                    { key: position.id, domProps: { value: position.id } },
+                    [_vm._v(_vm._s(position.name))]
+                  )
+                }),
+                0
+              )
             ]),
             _vm._v(" "),
             _c("div", { staticClass: "form-group" }, [
@@ -38518,62 +38574,104 @@ var render = function() {
                 _vm._v("Departement")
               ]),
               _vm._v(" "),
-              _c("input", {
-                directives: [
-                  {
-                    name: "model",
-                    rawName: "v-model",
-                    value: _vm.form.departement_name,
-                    expression: "form.departement_name"
-                  }
-                ],
-                staticClass: "form-control",
-                attrs: {
-                  type: "text",
-                  id: "departement",
-                  placeholder: "Departement"
-                },
-                domProps: { value: _vm.form.departement_name },
-                on: {
-                  input: function($event) {
-                    if ($event.target.composing) {
-                      return
+              _c(
+                "select",
+                {
+                  directives: [
+                    {
+                      name: "model",
+                      rawName: "v-model",
+                      value: _vm.selectedDepartement,
+                      expression: "selectedDepartement"
                     }
-                    _vm.$set(_vm.form, "departement_name", $event.target.value)
+                  ],
+                  staticClass: "form-control",
+                  attrs: {
+                    name: "departement",
+                    id: "departement",
+                    tabindex: "12"
+                  },
+                  on: {
+                    change: [
+                      function($event) {
+                        var $$selectedVal = Array.prototype.filter
+                          .call($event.target.options, function(o) {
+                            return o.selected
+                          })
+                          .map(function(o) {
+                            var val = "_value" in o ? o._value : o.value
+                            return val
+                          })
+                        _vm.selectedDepartement = $event.target.multiple
+                          ? $$selectedVal
+                          : $$selectedVal[0]
+                      },
+                      function($event) {
+                        return _vm.chooseDepartement($event)
+                      }
+                    ]
                   }
-                }
-              })
+                },
+                _vm._l(_vm.departements, function(departement) {
+                  return _c(
+                    "option",
+                    {
+                      key: departement.id,
+                      domProps: { value: departement.id }
+                    },
+                    [_vm._v(_vm._s(departement.name))]
+                  )
+                }),
+                0
+              )
             ]),
             _vm._v(" "),
             _c("div", { staticClass: "form-group" }, [
               _c("label", { attrs: { for: "office" } }, [_vm._v("Office")]),
               _vm._v(" "),
-              _c("input", {
-                directives: [
-                  {
-                    name: "model",
-                    rawName: "v-model",
-                    value: _vm.form.office_name,
-                    expression: "form.office_name"
-                  }
-                ],
-                staticClass: "form-control",
-                attrs: {
-                  type: "text",
-                  id: "office",
-                  "aria-describedby": "office",
-                  placeholder: "Office"
-                },
-                domProps: { value: _vm.form.office_name },
-                on: {
-                  input: function($event) {
-                    if ($event.target.composing) {
-                      return
+              _c(
+                "select",
+                {
+                  directives: [
+                    {
+                      name: "model",
+                      rawName: "v-model",
+                      value: _vm.selectedOffice,
+                      expression: "selectedOffice"
                     }
-                    _vm.$set(_vm.form, "office_name", $event.target.value)
+                  ],
+                  staticClass: "form-control",
+                  attrs: { name: "office", id: "office", tabindex: "12" },
+                  on: {
+                    change: [
+                      function($event) {
+                        var $$selectedVal = Array.prototype.filter
+                          .call($event.target.options, function(o) {
+                            return o.selected
+                          })
+                          .map(function(o) {
+                            var val = "_value" in o ? o._value : o.value
+                            return val
+                          })
+                        _vm.selectedOffice = $event.target.multiple
+                          ? $$selectedVal
+                          : $$selectedVal[0]
+                      },
+                      function($event) {
+                        return _vm.chooseOffice($event)
+                      }
+                    ]
                   }
-                }
-              })
+                },
+                _vm._l(_vm.offices, function(office) {
+                  return _c(
+                    "option",
+                    { key: office.id, domProps: { value: office.id } },
+                    [_vm._v(_vm._s(office.name))]
+                  )
+                }),
+                0
+              )
             ]),
             _vm._v(" "),
             _c("div", { staticClass: "form-group" }, [
@@ -38647,7 +38745,7 @@ var render = function() {
       _vm._v(" "),
       _c(
         "tbody",
-        _vm._l(_vm.tables, function(table, i) {
+        _vm._l(_vm.employer, function(table, i) {
           return _c("tr", { key: i }, [
             _c("th", { attrs: { scope: "row" } }, [_vm._v(_vm._s(table.id))]),
             _vm._v(" "),

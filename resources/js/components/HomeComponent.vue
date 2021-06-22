@@ -24,15 +24,21 @@
         <div class="col-sm-6">
         <div class="form-group">
             <label for="position">Position</label>
-            <input type="text" class="form-control" id="position" aria-describedby="position" placeholder="Position" v-model="form.position_name">
+            <select v-model="selectedPosition" @change="choosePosition($event)" name="position" id="position" class="form-control" tabindex="12">
+            <option v-for="(position) in positions" :key="position.id" :value="position.id">{{ position.name }}</option>
+            </select>
         </div>
         <div class="form-group">
             <label for="departement">Departement</label>
-            <input type="text" class="form-control" id="departement" placeholder="Departement" v-model="form.departement_name">
+            <select v-model="selectedDepartement" @change="chooseDepartement($event)" name="departement" id="departement" class="form-control" tabindex="12">
+            <option v-for="(departement) in departements" :key="departement.id" :value="departement.id">{{ departement.name }}</option>
+            </select>
         </div>
           <div class="form-group">
             <label for="office">Office</label>
-            <input type="text" class="form-control" id="office" aria-describedby="office" placeholder="Office" v-model="form.office_name">
+        <select v-model="selectedOffice" @change="chooseOffice($event)" name="office" id="office" class="form-control" tabindex="12">
+            <option v-for="(office) in offices" :key="office.id" :value="office.id">{{ office.name }}</option>
+        </select>
         </div>
         <div class="form-group">
             <label for="phone number">Phone Number</label>
@@ -66,7 +72,7 @@
     </tr>
   </thead>
         <tbody>
-            <tr v-for="(table,i) in tables" :key="i">
+            <tr v-for="(table,i) in employer" :key="i">
             <th scope="row">{{ table.id  }}</th>  
             <td>{{ table.first_name }}</td>
             <td>{{ table.last_name }}</td>  
@@ -88,7 +94,13 @@
         },
         data(){
             return{
-                tables:{},
+                selectedPosition:"",
+                selectedOffice:"",
+                selectedDepartement:"",
+                offices:{},
+                departements:{},
+                positions:{},
+                employer:{},
                 form:{
                     id:'',
                     first_name :'',
@@ -96,25 +108,55 @@
                     email_address :'',
                     phone_number :'',
                     position_id :'',
-                    departement_name  :'',
-                    office_name :''
+                    departement_id  :'',
+                    office_id :''
                 }
             }
         },
         methods:{
+            chooseDepartement(event){
+                this.form.departement_id  = event.target.value;
+                console.log(this.form.departement_id)
+            },
+            choosePosition(event){
+                this.form.position_id = event.target.value;
+                console.log(this.form.position_id)
+            },
+            chooseOffice(event){
+                this.form.office_id= event.target.value;
+                console.log(this.form.office_id)
+            },
             load(){
                 axios
                 .get('http://test.test/api/employer')
                 .then((response) => {
-                    this.tables = response.data
-                console.log(this.tables)
+                this.employer = response.data
+                console.log(this.employer)
+                })
+                axios
+                .get('http://test.test/api/departement')
+                .then((response) => {
+                this.departements = response.data;
+                console.log(this.departements)
+                })
+                axios
+                .get('http://test.test/api/office')
+                .then((response) => {
+                this.offices = response.data;
+                console.log(this.offices)
+                })
+                axios
+                .get('http://test.test/api/position')
+                .then((response) => {
+                this.positions = response.data;
+                console.log(this.positions)
                 })
             },
             postData(){
                 axios
                 .post('http://test.test/api/employer', this.form)
                 .then((response) => {
-                    // this.tables = response.data;
+                this.load();
                 console.log(response)
                 })
             },
@@ -122,13 +164,15 @@
                 axios
                 .post('http://test.test/api/employer', this.form)
                 .then((response) => {
-                    // this.first_name =''
-                    // this.last_name =''  
-                    // this.email_address =''
-                    // this.phone_number =''
-                    // this.position_name =''
-                    // this.departement_name  =''
-                    // this.office_name =''
+                    this.form.id = '';
+                    this.form.first_name ='',
+                    this.form.last_name ='',  
+                    this.form.email_address ='',
+                    this.form.phone_number ='',
+                    this.selectedPosition ='',
+                    this.selectedDepartement  ='',
+                    this.selectedOffice =''
+                this.load();
                 console.log(response)
                 })
             }
